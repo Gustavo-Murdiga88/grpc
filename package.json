@@ -1,0 +1,27 @@
+{
+  "name": "grpc",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A simple teste to share to world how we cans use grpc with fastify and typescript",
+  "main": "index.js",
+  "scripts": {
+    "generate:types": "pnpm proto-loader-gen-types --grpcLib=@grpc/grpc-js --outDir=./proto-gen ./prototypes/*.proto",
+    "build": "tsc",
+    "start:dev": "node ./src/infra/server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.2",
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.5",
+    "@gm-dev/biome": "^1.0.3",
+    "@grpc/proto-loader": "^0.8.0",
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.13.4",
+    "fastify": "^5.5.0"
+  }
+}
