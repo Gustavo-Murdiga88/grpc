@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import * as grpc from "@grpc/grpc-js";
 import { loadSync } from "@grpc/proto-loader";
 import type { ProtoGrpcType } from "../../../proto-gen/hello";
-import type { GreeterHandlers } from "../../../proto-gen/hello/Greeter";
+import { containers } from "./containers";
 
 const pathToProto = resolve(process.cwd(), "prototypes/hello.proto");
 const definition = loadSync(pathToProto);
@@ -14,11 +14,7 @@ async function grpcServer() {
 	const { resolve, reject, promise } = Promise.withResolvers<boolean | Error>();
 	const server = new grpc.Server();
 
-	server.addService(helloWord.hello.Greeter.service, {
-		sayHello: async (_call, callback) => {
-			callback(null, { message: "Hello from gRPC server!" });
-		},
-	} satisfies GreeterHandlers);
+	server.addService(helloWord.hello.Greeter.service, containers);
 
 	server.bindAsync(
 		"0.0.0.0:50051",

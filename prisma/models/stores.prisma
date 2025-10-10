@@ -1,0 +1,8 @@
+model Store {
+  id   String @id @default(uuid())
+  name String
+
+  addressId String?
+
+  address Address? @relation(fields: [addressId], references: [id], onDelete: Cascade)
+}

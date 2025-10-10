@@ -12,16 +12,20 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.6.2",
+  "packageManager": "pnpm@10.18.1+sha512.77a884a165cbba2d8d1c19e3b4880eee6d2fcabd0d879121e282196b80042351d5eb3ca0935fa599da1dc51265cc68816ad2bddd2a2de5ea9fdf92adbec7cd34",
   "devDependencies": {
     "@biomejs/biome": "^2.2.5",
-    "@gm-dev/biome": "^1.0.3",
+    "@gm-dev/biome": "^1.0.4",
     "@grpc/proto-loader": "^0.8.0",
     "@types/node": "^24.3.0",
+    "prisma": "^6.17.0",
     "typescript": "^5.9.2"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.13.4",
-    "fastify": "^5.5.0"
+    "@prisma/client": "^6.17.0",
+    "fastify": "^5.5.0",
+    "redis": "^5.8.3",
+    "zod": "^4.1.12"
   }
 }

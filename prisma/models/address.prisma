@@ -1,0 +1,9 @@
+model Address {
+  id      String @id @default(uuid())
+  street  String
+  city    String
+  country String
+
+  User   User[]
+  Stores Store[]
+}
