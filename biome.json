@@ -3,5 +3,12 @@
 	"extends" : ["@gm-dev/biome/node"],
 	"files":{
 		"includes": ["./src/**/*.{ts}"]
+	},
+	"linter": {
+		"rules": {
+			"complexity": {
+        "noStaticOnlyClass": "off"
+      }
+		}
 	}
 }

@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package stores;
+
+service StoresService  {
+  rpc listStores (Void) returns (StoresResponse) {}
+  rpc listCustomers (Void) returns (CustomersResponse) {}
+}
+
+message Void {}
+
+message Stores {
+  string id = 1;
+  string name = 2;
+  string addressId = 3;
+}
+
+message StoresResponse {
+  repeated Stores stores = 1;
+}
+
+message Customers {
+  string name = 1;
+  int32 age = 2;
+  optional string addressId = 3;
+}
+
+message CustomersResponse {
+  repeated Customers customers = 1;
+}
+

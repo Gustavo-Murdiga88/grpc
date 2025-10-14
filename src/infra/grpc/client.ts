@@ -1,16 +1,16 @@
 import { resolve } from "node:path";
 import * as grpc from "@grpc/grpc-js";
 import { loadSync } from "@grpc/proto-loader";
-import type { ProtoGrpcType } from "../../../proto-gen/hello";
+import type { ProtoGrpcType } from "../../../proto-gen/stores";
 
-const pathToProto = resolve(process.cwd(), "prototypes/hello.proto");
+const pathToProto = resolve(process.cwd(), "prototypes/stores.proto");
 const definition = loadSync(pathToProto);
-const helloWord = grpc.loadPackageDefinition(
+const storeService = grpc.loadPackageDefinition(
 	definition,
 ) as unknown as ProtoGrpcType;
 
-const client = new helloWord.hello.Greeter(
-	"localhost:50051",
+const client = new storeService.stores.StoresService(
+	"0.0.0.0:50051",
 	grpc.credentials.createInsecure(),
 	{
 		"grpc.service_config": JSON.stringify({

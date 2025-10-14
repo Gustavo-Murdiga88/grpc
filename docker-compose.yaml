@@ -12,9 +12,31 @@ services:
       PGDATA: "/var/lib/postgresql/data"
     volumes:
       - ./db:/var/lib/postgresql/data
+  redis: 
+    image: bitnami/redis:latest
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=redis
+    networks:
+      - redis
+    volumes:
+      - ./cache:/bitnami/redis/data
+    
 volumes:
+  cache: 
+    driver: local
+    name: grpc_local_cache
+    labels:
+      developer: "GM DEV"
   db:
     driver: local
     name: grpc_local_db
     labels:
+      developer: "GM DEV"
+networks:
+  redis:
+    driver: bridge
+    name: grpc_redis_network
+    labels: 
       developer: "GM DEV"

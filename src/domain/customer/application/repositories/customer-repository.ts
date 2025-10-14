@@ -7,4 +7,5 @@ export type Customer = {
 
 export interface ICustomerRepository {
 	findAll(): Promise<Array<Customer>>;
+	create(customer: Omit<Customer, "id">): Promise<Customer>;
 }

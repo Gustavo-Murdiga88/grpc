@@ -13,32 +13,45 @@ export class RedisCustomerRepository implements ICacheCustomerRepository {
 	}) {
 		this.client = client;
 	}
+
+	private async connect() {
+		await this.client.connect();
+
+		if (this.client.isReady === false) {
+			throw new InternalServerError();
+		}
+	}
+
 	async setAll(customers: Array<Customer>): Promise<void> {
 		const customersToJson = JSON.stringify(customers, null, 2);
+		await this.connect();
 
 		await this.client
 			.set("customers", customersToJson, {
 				expiration: {
 					type: "EX",
-					value: 60 * 60, // 1 hour
+					value: 5, // 5 seconds
 				},
 			})
 			.catch((_err) => {
 				throw new InternalServerError();
 			});
+
+		this.client.destroy();
 	}
 
 	async findAll(): Promise<Array<Customer>> {
-		const customers = await this.client.hVals("customers");
+		await this.connect();
 
-		if (!customers) {
+		const customers: Array<Customer> = JSON.parse(
+			(await this.client.get("customers")) || "[]",
+		);
+		this.client.destroy();
+
+		if (customers.length === 0) {
 			return [];
 		}
 
-		const formattedCustomers = customers.map(
-			(customer) => JSON.parse(customer) as Customer,
-		);
-
-		return formattedCustomers;
+		return customers;
 	}
 }

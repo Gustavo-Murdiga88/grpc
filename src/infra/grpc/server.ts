@@ -1,12 +1,12 @@
 import { resolve } from "node:path";
 import * as grpc from "@grpc/grpc-js";
 import { loadSync } from "@grpc/proto-loader";
-import type { ProtoGrpcType } from "../../../proto-gen/hello";
+import type { ProtoGrpcType } from "../../../proto-gen/stores";
 import { containers } from "./containers";
 
-const pathToProto = resolve(process.cwd(), "prototypes/hello.proto");
+const pathToProto = resolve(process.cwd(), "prototypes/stores.proto");
 const definition = loadSync(pathToProto);
-const helloWord = grpc.loadPackageDefinition(
+const storesService = grpc.loadPackageDefinition(
 	definition,
 ) as unknown as ProtoGrpcType;
 
@@ -14,7 +14,7 @@ async function grpcServer() {
 	const { resolve, reject, promise } = Promise.withResolvers<boolean | Error>();
 	const server = new grpc.Server();
 
-	server.addService(helloWord.hello.Greeter.service, containers);
+	server.addService(storesService.stores.StoresService.service, containers);
 
 	server.bindAsync(
 		"0.0.0.0:50051",

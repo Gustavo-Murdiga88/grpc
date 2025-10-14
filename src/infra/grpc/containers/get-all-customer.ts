@@ -1,9 +1,10 @@
 /** biome-ignore-all lint/style/useNamingConvention: <explanation> */
 
 import type { ServerUnaryCall, sendUnaryData } from "@grpc/grpc-js";
-import type { helloReply } from "../../../../proto-gen/hello/helloReply";
-import type { helloRequest__Output } from "../../../../proto-gen/hello/helloRequest";
+import type { CustomersResponse } from "../../../../proto-gen/stores/CustomersResponse";
+import type { Stores__Output } from "../../../../proto-gen/stores/Stores";
 import type { GetManyCustomersUseCase } from "../../../domain/customer/application/use-case/get-customers-usecase";
+import { GrpcCustomerPresenter } from "../presenters/customer-presenter";
 
 export class GRPCGetAllCustomers {
 	private useCase: GetManyCustomersUseCase;
@@ -12,24 +13,44 @@ export class GRPCGetAllCustomers {
 		this.useCase = useCase;
 	}
 
-	public async handle() {
+	protected async handle() {
 		const result = await this.useCase.execute();
 
 		if (result.isLeft()) {
 			throw result.value;
 		}
 
-		return result.value;
+		return GrpcCustomerPresenter.toProto(result.value);
 	}
 
 	public async run(
-		_call: ServerUnaryCall<helloRequest__Output, helloReply>,
-		callback: sendUnaryData<helloReply>,
+		_call: ServerUnaryCall<Stores__Output, CustomersResponse>,
+		callback: sendUnaryData<CustomersResponse>,
 	) {
-		const response = await this.handle().catch((err) => {
-			callback(err.message, null);
-		});
+		const customers = await this.handle()
+			.catch((err) => {
+				console.log(err);
+				callback(
+					{
+						message: err.message,
+						name: err.name,
+						stack: err.stack,
+						code: err.code,
+						details: err.details,
+						cause: err.cause,
+					},
+					null,
+				);
+			})
+			.then((res) => res);
 
-		callback(null, { message: JSON.stringify(response) });
+		if (!customers) {
+			callback(null, {
+				customers: [],
+			});
+			return;
+		}
+
+		callback(null, customers);
 	}
 }

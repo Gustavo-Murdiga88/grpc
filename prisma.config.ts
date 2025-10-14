@@ -3,6 +3,6 @@ import {defineConfig} from "prisma/config"
 export default defineConfig({
   schema: "./prisma",
   migrations: {
-    seed: "./prism/seed.ts"
+    seed: "./prisma/seed.ts"
   }
 })

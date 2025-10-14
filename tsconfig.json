@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "es2022",
+    "module": "preserve",
     "moduleResolution": "bundler",
     "target": "esnext",
     "types": [
@@ -23,6 +23,13 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
+    "noEmit": true,
+    "rootDir": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
   },
   "include": [
     "./src/**/*.ts",

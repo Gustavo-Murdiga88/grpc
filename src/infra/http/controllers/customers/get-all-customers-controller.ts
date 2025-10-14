@@ -3,16 +3,24 @@ import { client as grpc } from "../../../grpc/client";
 
 export async function getAllCustomersController(app: FastifyInstance) {
 	app.get("/customers", async (_, reply) => {
-		grpc.sayHello({ name: "Gustavo" }, (err, response) => {
+		const { promise, resolve } = Promise.withResolvers();
+		grpc.listCustomers(_, (err, response) => {
 			if (err) {
-				return reply.status(err.code).send({
-					error: err.message,
-				});
+				resolve(
+					reply.status(err.code).send({
+						error: err.message,
+					}),
+				);
+				return;
 			}
 
-			return reply.send({
-				customers: !response?.message ? [] : JSON.parse(response.message),
-			});
+			resolve(
+				reply.send({
+					customers: response?.customers || [],
+				}),
+			);
 		});
+
+		return await promise;
 	});
 }

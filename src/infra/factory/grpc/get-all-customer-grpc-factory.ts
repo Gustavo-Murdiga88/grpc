@@ -5,7 +5,7 @@ import { client as prismaClient } from "../../db/prisma/client";
 import { PrismaCustomerRepository } from "../../db/prisma/repositories/prisma-customer-repository";
 import { GRPCGetAllCustomers } from "../../grpc/containers/get-all-customer";
 
-export function grpcGetAllCustomerFactory() {
+export const grpcGetAllCustomerFactory = () => {
 	const cache = new RedisCustomerRepository({
 		client: redisClient,
 	});
@@ -17,5 +17,6 @@ export function grpcGetAllCustomerFactory() {
 		customerRepository,
 	});
 
-	return new GRPCGetAllCustomers(useCase);
-}
+	const container = new GRPCGetAllCustomers(useCase);
+	return container.run.bind(container);
+};
