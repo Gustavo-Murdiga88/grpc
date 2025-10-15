@@ -1,6 +1,8 @@
 import type * as grpc from '@grpc/grpc-js';
 import type { MessageTypeDefinition } from '@grpc/proto-loader';
 
+import type { CreateCustomerRequest as _stores_CreateCustomerRequest, CreateCustomerRequest__Output as _stores_CreateCustomerRequest__Output } from './stores/CreateCustomerRequest';
+import type { CreateStoreRequest as _stores_CreateStoreRequest, CreateStoreRequest__Output as _stores_CreateStoreRequest__Output } from './stores/CreateStoreRequest';
 import type { Customers as _stores_Customers, Customers__Output as _stores_Customers__Output } from './stores/Customers';
 import type { CustomersResponse as _stores_CustomersResponse, CustomersResponse__Output as _stores_CustomersResponse__Output } from './stores/CustomersResponse';
 import type { Stores as _stores_Stores, Stores__Output as _stores_Stores__Output } from './stores/Stores';
@@ -14,6 +16,8 @@ type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> 
 
 export interface ProtoGrpcType {
   stores: {
+    CreateCustomerRequest: MessageTypeDefinition<_stores_CreateCustomerRequest, _stores_CreateCustomerRequest__Output>
+    CreateStoreRequest: MessageTypeDefinition<_stores_CreateStoreRequest, _stores_CreateStoreRequest__Output>
     Customers: MessageTypeDefinition<_stores_Customers, _stores_Customers__Output>
     CustomersResponse: MessageTypeDefinition<_stores_CustomersResponse, _stores_CustomersResponse__Output>
     Stores: MessageTypeDefinition<_stores_Stores, _stores_Stores__Output>

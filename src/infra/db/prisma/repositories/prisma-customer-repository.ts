@@ -26,6 +26,9 @@ export class PrismaCustomerRepository implements ICustomerRepository {
 	async findAll(): Promise<Array<Customer>> {
 		const customers = await this.client.user.findMany({
 			select: CustomerDto,
+			orderBy: {
+				name: "asc",
+			},
 		});
 
 		return customers;

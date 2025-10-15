@@ -5,9 +5,22 @@ package stores;
 service StoresService  {
   rpc listStores (Void) returns (StoresResponse) {}
   rpc listCustomers (Void) returns (CustomersResponse) {}
+  rpc createCustomer (CreateCustomerRequest) returns (Void) {}
+  rpc createStore (CreateStoreRequest) returns (Void) {}
 }
 
 message Void {}
+
+message CreateStoreRequest {
+  string name = 1;
+  optional string addressId = 2;
+}
+
+message CreateCustomerRequest{
+  string name = 1;
+  int32 age = 2;
+  optional string addressId = 3;
+}
 
 message Stores {
   string id = 1;
