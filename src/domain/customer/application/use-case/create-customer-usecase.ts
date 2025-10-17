@@ -1,6 +1,9 @@
 import { type Either, right } from "../../../../core/either";
 import { Customer } from "../../enterprise/entities/customers";
-import type { ICustomerRepository } from "../repositories/customer-repository";
+import type {
+	CustomerProps,
+	ICustomerRepository,
+} from "../repositories/customer-repository";
 
 type CustomerResponse = Either<Error, Customer>;
 
@@ -14,7 +17,7 @@ export class CreateCustomersUseCase {
 		this.customerRepository = customerRepository;
 	}
 
-	async execute(customer: Omit<Customer, "id">): Promise<CustomerResponse> {
+	async execute(customer: CustomerProps): Promise<CustomerResponse> {
 		const customerCreated = await this.customerRepository.create(customer);
 
 		return right(
@@ -24,7 +27,7 @@ export class CreateCustomersUseCase {
 					age: customerCreated.age,
 					name: customerCreated.name,
 				},
-				customerCreated.id,
+				customerCreated.id.toString(),
 			),
 		);
 	}

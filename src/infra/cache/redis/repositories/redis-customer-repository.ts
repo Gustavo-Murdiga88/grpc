@@ -1,7 +1,14 @@
+import { Customer } from "@/domain/customer/enterprise/entities/customers";
 import { InternalServerError } from "../../../../core/errors/internal-server-error";
 import type { ICacheCustomerRepository } from "../../../../domain/cache/repositories/customer-repository";
-import type { Customer } from "../../../../domain/customer/application/repositories/customer-repository";
 import type { RedisClient } from "../client";
+
+type CustomerJson = {
+	id: string;
+	name: string;
+	age: number;
+	addressId: string | null;
+};
 
 export class RedisCustomerRepository implements ICacheCustomerRepository {
 	private client: RedisClient;
@@ -23,7 +30,9 @@ export class RedisCustomerRepository implements ICacheCustomerRepository {
 	}
 
 	async setAll(customers: Array<Customer>): Promise<void> {
-		const customersToJson = JSON.stringify(customers, null, 2);
+		const customersMapper = customers.map((customer) => customer.toObject());
+
+		const customersToJson = JSON.stringify(customersMapper, null, 2);
 		await this.connect();
 
 		await this.client
@@ -43,7 +52,7 @@ export class RedisCustomerRepository implements ICacheCustomerRepository {
 	async findAll(): Promise<Array<Customer>> {
 		await this.connect();
 
-		const customers: Array<Customer> = JSON.parse(
+		const customers: Array<CustomerJson> = JSON.parse(
 			(await this.client.get("customers")) || "[]",
 		);
 		this.client.destroy();
@@ -52,6 +61,6 @@ export class RedisCustomerRepository implements ICacheCustomerRepository {
 			return [];
 		}
 
-		return customers;
+		return customers.map((customer) => Customer.create(customer, customer.id));
 	}
 }

@@ -1,5 +1,6 @@
-export type Customer = {
-	id: string;
+import type { Customer } from "../../enterprise/entities/customers";
+
+export type CustomerProps = {
 	name: string;
 	age: number;
 	addressId: string | null;
@@ -7,5 +8,5 @@ export type Customer = {
 
 export interface ICustomerRepository {
 	findAll(): Promise<Array<Customer>>;
-	create(customer: Omit<Customer, "id">): Promise<Customer>;
+	create(customer: CustomerProps): Promise<Customer>;
 }

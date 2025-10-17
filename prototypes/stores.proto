@@ -36,6 +36,7 @@ message Customers {
   string name = 1;
   int32 age = 2;
   optional string addressId = 3;
+  optional string id = 4;
 }
 
 message CustomersResponse {

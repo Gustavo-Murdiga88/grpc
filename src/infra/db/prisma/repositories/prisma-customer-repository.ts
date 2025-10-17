@@ -1,6 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
+import { Customer } from "@/domain/customer/enterprise/entities/customers";
 import type {
-	Customer,
+	CustomerProps,
 	ICustomerRepository,
 } from "../../../../domain/customer/application/repositories/customer-repository";
 import { CustomerDto } from "../../dto/customers-dto";
@@ -11,7 +12,7 @@ export class PrismaCustomerRepository implements ICustomerRepository {
 	constructor({ client }: { client: PrismaClient }) {
 		this.client = client;
 	}
-	async create(customer: Omit<Customer, "id">): Promise<Customer> {
+	async create(customer: CustomerProps): Promise<Customer> {
 		const customerCreated = await this.client.user.create({
 			data: {
 				name: customer.name,
@@ -20,7 +21,7 @@ export class PrismaCustomerRepository implements ICustomerRepository {
 			},
 		});
 
-		return customerCreated;
+		return Customer.create(customer, customerCreated.id.toString());
 	}
 
 	async findAll(): Promise<Array<Customer>> {
@@ -31,6 +32,6 @@ export class PrismaCustomerRepository implements ICustomerRepository {
 			},
 		});
 
-		return customers;
+		return customers.map((customer) => Customer.create(customer, customer.id));
 	}
 }

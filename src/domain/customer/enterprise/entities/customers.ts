@@ -35,6 +35,15 @@ export class Customer extends Entity<ICustomerProps> {
 		return this.props.addressId;
 	}
 
+	public toObject() {
+		return {
+			id: this.id.toString(),
+			addressId: this.addressId,
+			age: this.age,
+			name: this.name,
+		};
+	}
+
 	static create(props: ICustomerProps, id?: string) {
 		const customer = new Customer(props, id);
 		return customer;

@@ -25,7 +25,7 @@ export class GetManyCustomersUseCase {
 		if (cachedCustomers.length > 0) {
 			return right(
 				cachedCustomers.map((customer) =>
-					Customer.create(customer, customer.id),
+					Customer.create(customer, customer.id.toString()),
 				),
 			);
 		}
@@ -35,7 +35,9 @@ export class GetManyCustomersUseCase {
 		await this.cache.setAll(customers);
 
 		return right(
-			customers.map((customer) => Customer.create(customer, customer.id)),
+			customers.map((customer) =>
+				Customer.create(customer, customer.id.toString()),
+			),
 		);
 	}
 }

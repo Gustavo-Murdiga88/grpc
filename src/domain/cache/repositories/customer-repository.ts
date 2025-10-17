@@ -1,9 +1,4 @@
-export type Customer = {
-	id: string;
-	name: string;
-	age: number;
-	addressId: string | null;
-};
+import type { Customer } from "@/domain/customer/enterprise/entities/customers";
 
 export interface ICacheCustomerRepository {
 	findAll(): Promise<Array<Customer>>;

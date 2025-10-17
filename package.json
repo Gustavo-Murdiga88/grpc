@@ -8,7 +8,10 @@
     "generate:types": "pnpm proto-loader-gen-types --grpcLib=@grpc/grpc-js --outDir=./proto-gen ./prototypes/*.proto",
     "build": "tsc",
     "migrate": "dotenv -e .env -- pnpm prisma migrate dev",
-    "start:dev": "tsx watch --env-file=.env ./src/infra/server.ts"
+    "start:dev:grpc": "tsx watch --env-file=.env ./src/infra/server-grpc.ts",
+    "start:dev:http": "tsx watch --env-file=.env ./src/infra/server-http.ts",
+    "test:watch": "vitest run --watch",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +25,9 @@
     "dotenv-cli": "^10.0.0",
     "prisma": "^6.17.0",
     "tsx": "^4.20.6",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.13.4",
