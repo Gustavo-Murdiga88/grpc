@@ -8,7 +8,10 @@
 		"rules": {
 			"complexity": {
         "noStaticOnlyClass": "off"
-      }
+      },
+			"style": {
+				"noDefaultExport": "off"
+			}
 		}
 	}
 }

@@ -1,8 +1,8 @@
 import { CreateCustomersUseCase } from "@/domain/customer/application/use-case/create-customer-usecase";
 
-import { GRPCCreateCustomer } from "@/infra/grpc/containers/create-customer";
 import { client as prismaClient } from "../../db/prisma/client";
 import { PrismaCustomerRepository } from "../../db/prisma/repositories/prisma-customer-repository";
+import { GRPCCreateCustomer } from "@/infra/grpc/handlers/create-customer";
 
 export const grpcCreateCustomerFactory = () => {
 	const customerRepository = new PrismaCustomerRepository({
@@ -12,6 +12,5 @@ export const grpcCreateCustomerFactory = () => {
 		customerRepository,
 	});
 
-	const container = new GRPCCreateCustomer(useCase);
-	return container.run.bind(container);
+	return new GRPCCreateCustomer(useCase);
 };

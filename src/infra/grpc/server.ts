@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import * as grpc from "@grpc/grpc-js";
 import { loadSync } from "@grpc/proto-loader";
 import type { ProtoGrpcType } from "../../../proto-gen/stores";
-import { containers } from "./containers";
+import containers from "./containers";
 
 const pathToProto = resolve(process.cwd(), "prototypes/stores.proto");
 const definition = loadSync(pathToProto);
