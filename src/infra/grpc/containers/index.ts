@@ -1,5 +1,1 @@
-import storeHandler from "./store"
-
-export default {
-  ...storeHandler, 
-}
+export { default } from "./store"

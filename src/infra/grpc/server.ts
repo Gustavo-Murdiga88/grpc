@@ -14,7 +14,9 @@ async function grpcServer() {
 	const { resolve, reject, promise } = Promise.withResolvers<boolean | Error>();
 	const server = new grpc.Server();
 
-	server.addService(storesService.stores.StoresService.service, containers);
+	server.addService(storesService.stores.StoresService.service, {
+		...containers,
+	});
 
 	server.bindAsync(
 		"0.0.0.0:50051",

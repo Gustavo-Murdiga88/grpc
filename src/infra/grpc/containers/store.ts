@@ -9,4 +9,4 @@ export default new GRPCStoreHandler(
 	grpcCreateStoreFactory(),
 	grpcGetStoriesFactory(),
 	grpcCreateCustomerFactory(),
-).handlers();
+);
