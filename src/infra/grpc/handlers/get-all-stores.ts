@@ -1,9 +1,13 @@
 /** biome-ignore-all lint/style/useNamingConvention: <explanation> */
 
-import type { ServerUnaryCall, sendUnaryData } from "@grpc/grpc-js";
+import {
+	type ServerUnaryCall,
+	type sendUnaryData,
+	status,
+} from "@grpc/grpc-js";
+import type { GetAllStoresUseCase } from "@/domain/store/application/use-case/get-stores-usecase";
 import type { StoresResponse } from "../../../../proto-gen/stores/StoresResponse";
 import type { Void } from "../../../../proto-gen/stores/Void";
-import type { GetAllStoresUseCase } from "../../../domain/store/application/use-case/get-stores-usecase";
 import { GrpcStorePresenter } from "../presenters/store-presenter";
 
 export class GRPCGetAllStores {
@@ -12,34 +16,28 @@ export class GRPCGetAllStores {
 	constructor(useCase: GetAllStoresUseCase) {
 		this.useCase = useCase;
 	}
-
-	private async handle() {
-		const result = await this.useCase.execute();
-
-		if (result.isLeft()) {
-			throw result.value;
-		}
-
-		return GrpcStorePresenter.toProto(result.value);
-	}
-
 	public async run(
 		_: ServerUnaryCall<Void, ResponseType>,
 		callback: sendUnaryData<StoresResponse>,
 	) {
-		const stores = await this.handle()
-			.catch((err) => {
-				console.log(err);
-				callback(
-					{
-						message: err.message,
-						name: err.name,
-						stack: err.stack,
-					},
-					null,
-				);
-			})
-			.then((res) => res);
+		const result = await this.useCase.execute();
+
+		if (result.isLeft()) {
+			const err = result.value;
+			return callback(
+				{
+					message: err.message,
+					name: err.name,
+					stack: err.stack,
+					cause: err.cause,
+					details: err.message,
+					code: status.CANCELLED,
+				},
+				null,
+			);
+		}
+
+		const stores = GrpcStorePresenter.toProto(result.value);
 
 		if (!stores) {
 			callback(null, {

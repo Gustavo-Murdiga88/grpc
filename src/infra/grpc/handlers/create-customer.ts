@@ -1,6 +1,10 @@
 /** biome-ignore-all lint/style/useNamingConvention: <explanation> */
 
-import type { ServerUnaryCall, sendUnaryData } from "@grpc/grpc-js";
+import {
+	type ServerUnaryCall,
+	type sendUnaryData,
+	status,
+} from "@grpc/grpc-js";
 import type { CreateCustomersUseCase } from "@/domain/customer/application/use-case/create-customer-usecase";
 import type {
 	CreateCustomerRequest,
@@ -14,45 +18,32 @@ export class GRPCCreateCustomer {
 	constructor(useCase: CreateCustomersUseCase) {
 		this.useCase = useCase;
 	}
-
-	protected async handle(data: {
-		name: string;
-		age: number;
-		addressId: string | null;
-	}) {
-		const result = await this.useCase.execute(data);
-
-		if (result.isLeft()) {
-			throw result.value;
-		}
-	}
-
 	public async run(
 		_call: ServerUnaryCall<CreateCustomerRequest__Output, Void>,
 		callback: sendUnaryData<CreateCustomerRequest>,
 	) {
 		const body = _call.request;
 
-		await this.handle({
+		const result = await this.useCase.execute({
 			addressId: body?.addressId || null,
 			age: body.age || 0,
 			name: body.name || "",
-		})
-			.catch((err) => {
-				console.log(err);
-				callback(
-					{
-						message: err.message,
-						name: err.name,
-						stack: err.stack,
-						code: err.code,
-						details: err.details,
-						cause: err.cause,
-					},
-					null,
-				);
-			})
-			.then((res) => res);
+		});
+
+		if (result.isLeft()) {
+			const err = result.value;
+			return callback(
+				{
+					message: err.message,
+					name: err.name,
+					stack: err.stack,
+					code: status.CANCELLED,
+					details: err.message,
+					cause: err.cause,
+				},
+				null,
+			);
+		}
 
 		callback(null, {});
 	}

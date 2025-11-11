@@ -1,1 +1,5 @@
-export { default } from "./store"
+import handlers from "../handlers";
+
+export default {
+	handlers: handlers.storeHandler.handlers(),
+};
