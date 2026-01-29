@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package stores;
+
+// Stores Service Definition
+service StoresService  {
+  // List all stores
+  rpc ListStores (Void) returns (StoresResponse) {}
+  // List all customers
+  rpc ListCustomers (Void) returns (CustomersResponse) {}
+  // List customers by store id
+  rpc CreateCustomer (CreateCustomerRequest) returns (Void) {}
+  // Create a new store
+  rpc CreateStore (CreateStoreRequest) returns (Void) {}
+}
+
+message Void {}
+
+message CreateStoreRequest {
+  string name = 1;
+  optional string address_id = 2;
+}
+
+message CreateCustomerRequest{
+  string name = 1;
+  int32 age = 2;
+  optional string address_id = 3;
+}
+
+message Stores {
+  string id = 1;
+  string name = 2;
+  string address_id = 3;
+}
+
+message StoresResponse {
+  repeated Stores stores = 1;
+}
+
+message Customers {
+  string name = 1;
+  int32 age = 2;
+  optional string address_id = 3;
+  optional string id = 4;
+}
+
+message CustomersResponse {
+  repeated Customers customers = 1;
+}
+

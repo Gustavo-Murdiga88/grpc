@@ -1,6 +1,6 @@
 
-import {type ICustomerRepository, type CustomerProps} from "../../../src/domain/customer/application/repositories/customer-repository";
-import {Customer} from "../../../src/domain/customer/enterprise/entities/customers";
+import { Customer } from "@/domain/customer/customers";
+import {type ICustomerRepository, type CustomerProps} from "../../../src/domain/customer/repositories/customer-repository";
 
 export class CustomerTestRepository implements ICustomerRepository {
   private customers: Array<Customer> = [];

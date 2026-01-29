@@ -1,7 +1,19 @@
+## MODULE FILES
 node_modules
+
+## PRISMA GENERATED FILES
 /src/generated/prisma
 
+## ENV FILES
 .env
 
-db
-cache
+## DATABASE FILES
+/db
+/cache
+/store
+
+## GRPC BUILD
+/js
+
+# file OS
+.DS_Store

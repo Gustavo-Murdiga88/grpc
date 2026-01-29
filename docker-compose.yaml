@@ -2,16 +2,16 @@ name: "grpc test remessa"
 
 services:
   postgres:
-    image: postgres:alpine3.21
+    image: postgres:latest
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: "grpc"
       POSTGRES_PASSWORD: "grpc"
       POSTGRES_DB: "grpc"
-      PGDATA: "/var/lib/postgresql/data"
+      PGDATA: "/var/lib/postgresql"
     volumes:
-      - ./db:/var/lib/postgresql/data
+      - ./store/db:/var/lib/postgresql
   redis: 
     image: bitnami/redis:latest
     ports:
@@ -22,21 +22,71 @@ services:
       - redis
     volumes:
       - ./cache:/bitnami/redis/data
+  
+  prometheus: 
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./grafana/prometheus/config.yaml:/etc/prometheus/prometheus.yml
+    networks:
+      - logging
+    entrypoint: ["prometheus", "--config.file=../etc/prometheus/prometheus.yml", "--web.enable-remote-write-receiver"]
+
+  grafana: 
+    image: grafana/grafana
+    container_name: grafana
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_FEATURE_TOGGLES_ENABLE=alertingSimplifiedRouting,alertingQueryAndExpressionsStepMode
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./store/provisioning:/etc/grafana/provisioning
+      - ./store/store:/var/lib/grafana
+    networks:
+      - logging
+  alloy: 
+    image: grafana/alloy:latest
+    container_name: alloy
+    ports:
+      - "12345:12345"
+      - "9999:9999"
+    volumes:
+      - ./grafana/alloy/config.alloy:/etc/alloy/config.alloy
+      - ./store/logs:/var/log:ro
+    command: 
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    networks:
+      - logging
+    depends_on:
+      - loki
+      - prometheus
+
+  loki:
+    container_name: loki
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./grafana/loki/loki-config.yaml:/etc/loki/local-config.yaml 
+      # - ./store/tmp:/tmp/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - logging
     
-volumes:
-  cache: 
-    driver: local
-    name: grpc_local_cache
-    labels:
-      developer: "GM DEV"
-  db:
-    driver: local
-    name: grpc_local_db
-    labels:
-      developer: "GM DEV"
 networks:
+  logging:
+    driver: bridge
+    name: logging_network
   redis:
     driver: bridge
     name: grpc_redis_network
-    labels: 
-      developer: "GM DEV"

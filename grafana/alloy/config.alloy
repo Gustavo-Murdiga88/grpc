@@ -1,0 +1,190 @@
+logging {
+  level = "info"
+  format = "json"
+}
+
+livedebugging {
+  enabled = true
+}
+
+local.file_match "files" {
+  path_targets = [
+    {
+      __path__ = "/var/log/grpc.log",
+      service_name = "grpc_app",
+      namespace = "processamento",
+    },
+    {
+      __path__ = "/var/log/api.log",
+      service_name = "api_app",
+      namespace = "processamento",
+    },
+  ]
+  sync_period = "5s"
+}
+
+loki.source.file "apps" {
+  targets = local.file_match.files.targets
+
+  forward_to = [
+    loki.process.parse_json_grpc.receiver, 
+    loki.process.parse_json_api.receiver,
+  ]
+  tail_from_end = true
+}
+
+loki.process "parse_json_grpc" {
+  stage.json {
+    expressions = {
+      level = "",
+      res = "",
+      pid = "",
+      hostname = "",
+      name = "",
+      time = "",
+      request_id = "reqId",
+      status_code = "statusCode",
+    }
+  }
+
+  stage.timestamp {
+    source = "time"
+    format = "RFC3339"
+  }
+
+  stage.static_labels {
+    values = {
+        service_name = "grpc_app",
+        namespace = "processamento",
+    }
+  }
+
+  forward_to = [loki.write.grafana_loki.receiver]
+}
+
+loki.process "parse_json_api" {
+  stage.json {
+    expressions = {
+      level = "",
+      res = "",
+      pid = "",
+      hostname = "",
+      name = "",
+      time = "",
+      request_id = "reqId",
+      status_code = "statusCode",
+    }
+  }
+
+  stage.timestamp {
+    source = "time"
+    format = "RFC3339"
+  }
+
+  stage.static_labels {
+    values = {
+        service_name = "api_app",
+        namespace = "processamento",
+    }
+  }
+
+  forward_to = [loki.write.grafana_loki.receiver]
+}
+
+loki.source.api "api" {
+    http {
+        listen_address = "0.0.0.0"
+        listen_port = 9999
+    }
+    forward_to = [
+        loki.process.parse_json_grpc.receiver,
+        loki.process.parse_json_api.receiver,
+    ]
+    labels = {
+        forwarded = "true",
+    }
+}
+
+prometheus.exporter.unix "system" { }
+
+prometheus.scrape "scrape_metrics" {
+  targets         = prometheus.exporter.unix.system.targets
+  forward_to      = [prometheus.relabel.filter_metrics.receiver]
+  scrape_interval = "10s"
+}
+
+prometheus.relabel "filter_metrics" {
+  rule {
+    action        = "drop"
+    source_labels = ["env"]
+    regex         = "dev"
+  }
+
+  forward_to = [prometheus.remote_write.metrics_service.receiver]
+}
+
+prometheus.remote_write "metrics_service" {
+    endpoint {
+        url = "http://prometheus:9090/api/v1/write"
+
+        // basic_auth {
+        //   username = "admin"
+        //   password = "admin"
+        // }
+    }
+}
+
+otelcol.receiver.otlp "example" {
+  http {}
+
+  output {
+    metrics = [otelcol.processor.batch.example.input]
+    // logs    = [otelcol.processor.batch.example.input]
+    traces  = [otelcol.processor.batch.example.input]
+  }
+}
+
+
+otelcol.exporter.prometheus "metrics" {
+  forward_to = [prometheus.remote_write.metrics_service.receiver]
+}
+
+otelcol.processor.batch "example" {
+  output {
+    metrics = [otelcol.exporter.prometheus.metrics.input]
+    logs    = [otelcol.exporter.loki.prom_logs.input]
+  }
+}
+
+otelcol.exporter.loki "prom_logs" {
+  forward_to = [loki.write.grafana_loki.receiver]
+}
+
+prometheus.exporter.self "alloy" { }
+
+prometheus.scrape "self" {
+  targets = prometheus.exporter.self.alloy.targets
+  forward_to = [prometheus.remote_write.metrics_service.receiver]
+}
+
+loki.write "grafana_loki" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+
+    // basic_auth {
+    // username = "admin"
+    // password = "admin" 
+    //}
+
+  }
+}
+
+
+
+// To reload the configuration, send a POST request to the following endpoint:
+// curl -X POST http://localhost:12345/-/reload
+
+// to send logs to the api
+// curl -X POST http://localhost:9999/loki/api/v1/raw \
+//   -H "Content-Type: application/json" \
+//   -d '{}'
