@@ -32,7 +32,7 @@ query_range:
 limits_config:
   metric_aggregation_enabled: true
   # Set the retention period for logs
-  retention_enabled: true
+  # retention_enabled: true
   retention_period: 1h # 1 hour if you need of a longer retention, multiply this value for 24 to get time in days
 
 schema_config:
@@ -56,10 +56,10 @@ ruler:
 ui: 
  enabled: true
 
-http_client_config: 
-  basic_auth: 
-    username: ""
-    password: ""
+# http_client_config: 
+#   basic_auth: 
+#     username: ""
+#     password: ""
 
 
 
