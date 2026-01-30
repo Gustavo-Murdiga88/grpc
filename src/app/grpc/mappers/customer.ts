@@ -1,8 +1,8 @@
+import type { Customer } from "@/domain/customer/customers";
 import {
 	Customers as CustomersProto,
 	CustomersResponse,
-} from "@grpc/stores_pb";
-import type { Customer } from "@/domain/customer/customers";
+} from "@/grpc/stores_pb";
 
 export class GrpcCustomerPresenter {
 	static toProto(customers: Customer[]): CustomersResponse {

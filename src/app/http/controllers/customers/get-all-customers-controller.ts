@@ -1,12 +1,13 @@
 import type { FastifyInstance } from "fastify";
-import { client as grpc } from "../../../../app/grpc/client";
+import service from "@/app/grpc/ioc/containers/services";
+import { Void } from "@/grpc/stores_pb";
 
 export async function getAllCustomersController(app: FastifyInstance) {
 	app.get("/customers", async (_, reply) => {
 		const { promise, resolve } = Promise.withResolvers();
 		app.log.info({ ctx: "teste" }, "Logging inside getAllCustomersController");
 
-		grpc.listCustomers(_, (err, response) => {
+		service.store.listCustomers(new Void(), (err, data) => {
 			if (err) {
 				resolve(
 					reply.status(err.code).send({
@@ -16,9 +17,11 @@ export async function getAllCustomersController(app: FastifyInstance) {
 				return;
 			}
 
+			const customers = data.toObject();
+
 			resolve(
 				reply.send({
-					customers: response?.customers || [],
+					customers: customers.customersList,
 				}),
 			);
 		});

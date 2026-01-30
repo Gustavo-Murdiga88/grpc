@@ -2,7 +2,7 @@
 	"$schema": "https://biomejs.dev/schemas/2.3.13/schema.json",
 	"extends": ["@gm-dev/biome/node"],
 	"files": {
-		"includes": ["./src/**/*.{ts}"]
+		"includes": ["./src/**/*.{ts}", "./prisma/**/*.{ts}", "./config/**/*.{ts}", "./prisma.config.ts"]
 	},
 	"linter": {
 		"rules": {

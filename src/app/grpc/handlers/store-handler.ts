@@ -3,22 +3,14 @@ import type {
 	sendUnaryData,
 	UntypedHandleCall,
 } from "@grpc/grpc-js";
-import type { IStoresServiceServer } from "@grpc/stores_grpc_pb";
-import {
-	type CreateCustomerRequest,
-	type CreateStoreRequest,
-	Customers as CustomersProto,
-	CustomersResponse,
-	Stores as StoreProto,
-	StoresResponse,
-	Void,
-} from "@grpc/stores_pb";
 import type { CreateCustomersUseCase } from "@/domain/customer/use-case/create-customer-usecase";
 import type { GetManyCustomersUseCase } from "@/domain/customer/use-case/get-customers-usecase";
 import type { CreateStoreUseCase } from "@/domain/store/use-case/create-store-usecase";
 import type { GetAllStoresUseCase } from "@/domain/store/use-case/get-stores-usecase";
+import type * as grpc from "@/grpc/stores_grpc_pb";
+import * as Store from "@/grpc/stores_pb";
 
-export class StoreHandler implements IStoresServiceServer {
+export default class StoreHandler implements grpc.IStoresServiceServer {
 	constructor(
 		private readonly customerFindable: GetManyCustomersUseCase,
 		private readonly storeCreator: CreateStoreUseCase,
@@ -29,8 +21,8 @@ export class StoreHandler implements IStoresServiceServer {
 	[method: string]: UntypedHandleCall | any;
 
 	public async createCustomer(
-		request: ServerUnaryCall<CreateCustomerRequest, Void>,
-		callback: sendUnaryData<Void>,
+		request: ServerUnaryCall<Store.CreateCustomerRequest, Store.Void>,
+		callback: sendUnaryData<Store.Void>,
 	) {
 		const input = {
 			addressId: request.request.getAddressId() || null,
@@ -40,12 +32,12 @@ export class StoreHandler implements IStoresServiceServer {
 
 		await this.customerCreator.execute(input);
 
-		callback(null, new Void());
+		callback(null, new Store.Void());
 	}
 
 	public async createStore(
-		request: ServerUnaryCall<CreateStoreRequest, Void>,
-		callback: sendUnaryData<Void>,
+		request: ServerUnaryCall<Store.CreateStoreRequest, Store.Void>,
+		callback: sendUnaryData<Store.Void>,
 	) {
 		const input = {
 			name: request.request.getName(),
@@ -58,12 +50,12 @@ export class StoreHandler implements IStoresServiceServer {
 			return callback(store.value, null);
 		}
 
-		callback(null, new Void());
+		callback(null, new Store.Void());
 	}
 
 	public async listCustomers(
-		_: ServerUnaryCall<Void, CustomersResponse.AsObject>,
-		callback: sendUnaryData<CustomersResponse>,
+		_: ServerUnaryCall<Store.Void, Store.CustomersResponse.AsObject>,
+		callback: sendUnaryData<Store.CustomersResponse>,
 	) {
 		try {
 			const customers = await this.customerFindable.execute();
@@ -72,9 +64,9 @@ export class StoreHandler implements IStoresServiceServer {
 				return callback(customers.value, null);
 			}
 
-			const customersToProto = new CustomersResponse();
+			const customersToProto = new Store.CustomersResponse();
 			customers.value.forEach((customer) => {
-				const customerProto = new CustomersProto();
+				const customerProto = new Store.Customers();
 				customerProto.setId(customer.id.toString());
 				customerProto.setName(customer.name);
 				customerProto.setAge(customer.age);
@@ -88,18 +80,18 @@ export class StoreHandler implements IStoresServiceServer {
 	}
 
 	public async listStores(
-		_: ServerUnaryCall<Void, StoresResponse>,
-		call: sendUnaryData<StoresResponse>,
+		_: ServerUnaryCall<Store.Void, Store.StoresResponse>,
+		call: sendUnaryData<Store.StoresResponse>,
 	) {
 		const stores = await this.storeFindable.execute();
 
 		if (stores.isLeft()) {
 			return call(stores.value, null);
 		}
-		const storesToProto = new StoresResponse();
+		const storesToProto = new Store.StoresResponse();
 
 		stores.value.forEach((store) => {
-			const storeProto = new StoreProto();
+			const storeProto = new Store.Stores();
 			storeProto.setId(store.id.toString());
 			storeProto.setName(store.name);
 			storeProto.setAddressId(store?.addressId ?? "");

@@ -1,12 +1,23 @@
 {
   "compilerOptions": {
-    "module": "preserve",
+    "esModuleInterop": true,
+    "target": "es2024",
+    "module": "esnext",
+    "moduleDetection": "force",
     "moduleResolution": "bundler",
-    "target": "esnext",
+    "lib": [
+      "ES2024",
+    ],
+    
+    "checkJs": true,
+    "resolveJsonModule": true,
+    "allowArbitraryExtensions": true,
+    "allowJs": true,
     "types": [
       "node",
       "vitest/globals"
     ],
+    "verbatimModuleSyntax": false,
     "sourceMap": true,
     "declaration": false,
     "declarationMap": false,
@@ -19,10 +30,8 @@
     "noFallthroughCasesInSwitch": true,
     "noPropertyAccessFromIndexSignature": true,
     "strict": true,
-    "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
     "skipLibCheck": true,
     "noEmit": true,
     "rootDir": ".",
@@ -33,16 +42,17 @@
       "@/*": [
         "./src/*"
       ], 
-      "@grpc/*": [
+      "@/grpc/*": [
         "./js/*"
       ], 
-      "@config/*": [
+      "@/config/*": [
         "./config/*"
       ]
     }
   },
   "include": [
     "./src/**/*.ts",
-    "./test/**/*.ts"
+    "./test/**/*.ts",
+    "./prisma/**/*.ts"
   ]
 }

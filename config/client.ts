@@ -1,9 +1,8 @@
-
-
+import { envs } from "./envs"
 
 export default {
   store: {
-    host: "0.0.0.0",
-    port: 50001,
+    host: envs.GRPC_HOST,
+    port: envs.GRPC_PORT,
   }
 }

@@ -1,4 +1,4 @@
-import type { Customer } from "@/domain/customer/enterprise/entities/customers";
+import type { Customer } from "@/domain/customer/customers";
 
 export interface ICacheCustomerRepository {
 	findAll(): Promise<Array<Customer>>;

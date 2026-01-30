@@ -1,4 +1,4 @@
-import { Stores as StoresProto, StoresResponse } from "@grpc/stores_pb";
+import { Stores as StoresProto, StoresResponse } from "@/grpc/stores_pb";
 import type { Stores } from "../../../domain/cache/repositories/stores-repository";
 
 export class GrpcStorePresenter {
