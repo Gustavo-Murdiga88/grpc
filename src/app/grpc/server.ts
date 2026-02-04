@@ -6,7 +6,10 @@ import * as containers from "./ioc";
 
 async function grpcServer() {
 	const { resolve, reject, promise } = Promise.withResolvers<boolean | Error>();
-	const server = new grpc.Server();
+	const server = new grpc.Server({
+		"grpc.max_receive_message_length": -1,
+		"grpc.max_send_message_length": -1,
+	});
 
 	server.addService(StoresServiceService, containers.handlers.store);
 

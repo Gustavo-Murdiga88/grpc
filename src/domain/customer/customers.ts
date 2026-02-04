@@ -27,7 +27,6 @@ export class Customer extends Entity<ICustomerProps> {
 	}
 
 	get age() {
-		this;
 		return this.props.age;
 	}
 

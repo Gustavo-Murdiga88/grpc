@@ -54,8 +54,8 @@ export default class StoreHandler implements grpc.IStoresServiceServer {
 	}
 
 	public async listCustomers(
-		_: ServerUnaryCall<Store.Void, Store.CustomersResponse.AsObject>,
-		callback: sendUnaryData<Store.CustomersResponse>,
+		_: ServerUnaryCall<Store.Void, Store.CustomersListResponse>,
+		callback: sendUnaryData<Store.CustomersListResponse>,
 	) {
 		try {
 			const customers = await this.customerFindable.execute();
@@ -64,12 +64,16 @@ export default class StoreHandler implements grpc.IStoresServiceServer {
 				return callback(customers.value, null);
 			}
 
-			const customersToProto = new Store.CustomersResponse();
+			const customersToProto = new Store.CustomersListResponse();
 			customers.value.forEach((customer) => {
-				const customerProto = new Store.Customers();
-				customerProto.setId(customer.id.toString());
-				customerProto.setName(customer.name);
-				customerProto.setAge(customer.age);
+				const customerProto = new Store.Customer();
+
+				customerProto
+					.setId(customer.id.toString())
+					.setAddressId(customer?.addressId ?? "")
+					.setAge(customer.age)
+					.setName(customer.name);
+
 				customersToProto.addCustomers(customerProto);
 			});
 

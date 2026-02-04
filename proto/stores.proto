@@ -7,7 +7,7 @@ service StoresService  {
   // List all stores
   rpc ListStores (Void) returns (StoresResponse) {}
   // List all customers
-  rpc ListCustomers (Void) returns (CustomersResponse) {}
+  rpc ListCustomers (Void) returns (CustomersListResponse) {}
   // List customers by store id
   rpc CreateCustomer (CreateCustomerRequest) returns (Void) {}
   // Create a new store
@@ -38,13 +38,20 @@ message StoresResponse {
 }
 
 message Customers {
-  string name = 1;
-  int32 age = 2;
-  optional string address_id = 3;
-  optional string id = 4;
+  optional string id = 1;
+  string name = 2;
+  int32 age = 3;
+  optional string address_id = 4;
 }
 
-message CustomersResponse {
-  repeated Customers customers = 1;
+// New message definition for CustomersListResponse
+message Customer {
+  string id = 1;
+  string name = 2;
+  int32 age = 3;
+  string address_id = 4;
+}
+message CustomersListResponse {
+  repeated Customer customers = 1;
 }
 
